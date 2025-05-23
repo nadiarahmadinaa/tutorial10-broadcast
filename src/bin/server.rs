@@ -22,9 +22,9 @@ async fn handle_connection(
                     Some(Ok(msg)) => {
                         if msg.is_text() {
                             if let Some(text) = msg.as_text() {
-                                println!("Received from {addr}: {text}");
+                                println!("From client {addr}: {text}");
 
-                                let _ = bcast_tx.send(format!("{addr}: {text}"));
+                                let _ = bcast_tx.send(format!("Nadia's Computer - From server: {addr}: {text}"));
                             }
                         } else if msg.is_close() {
                             println!("Client {addr} disconnected");
@@ -45,7 +45,7 @@ async fn handle_connection(
             broadcast_msg = bcast_rx.recv() => {
                 match broadcast_msg {
                     Ok(msg) => {
-                        if !msg.starts_with(&format!("{addr}:")) {
+                        if !msg.starts_with(&format!("Nadia's Computer - From server: {addr}:")) {
                             if let Err(e) = ws_stream.send(Message::text(msg)).await {
                                 eprintln!("Error sending message to {addr}: {e}");
                                 break;
@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     loop {
         let (socket, addr) = listener.accept().await?;
-        println!("New connection from {addr:?}");
+        println!("New connection from Nadia's Computer {addr:?}");
         let bcast_tx = bcast_tx.clone();
         tokio::spawn(async move {
             // Wrap the raw TCP stream into a websocket.
